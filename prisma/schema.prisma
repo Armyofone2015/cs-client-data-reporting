@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  name         String?
+  passwordHash String?
+  role         Role           @default(CLIENT)
+  /// Positive Intelligence admin panel group id for this client's engagement data
+  piGroupId    String?
+  piGroupName  String?
+  isActive     Boolean        @default(true)
+  lastSignInAt DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  activities   ActivityEvent[]
+
+  @@index([piGroupId])
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+model ActivityEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  email     String?
+  action    String
+  detail    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId])
+  @@map("activity_events")
+}

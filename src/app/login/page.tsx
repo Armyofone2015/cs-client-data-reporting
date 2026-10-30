@@ -1,6 +1,14 @@
 import Link from "next/link";
+import { loginAction } from "@/app/actions/auth";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; next?: string }>;
+}) {
+  const params = await searchParams;
+  const next = params.next || "/portal";
+
   return (
     <main
       style={{
@@ -11,6 +19,7 @@ export default function LoginPage() {
       }}
     >
       <form
+        action={loginAction}
         style={{
           width: "100%",
           maxWidth: 420,
@@ -28,18 +37,15 @@ export default function LoginPage() {
           </p>
           <h1 style={{ margin: "0.35rem 0 0", fontSize: "1.5rem" }}>Sign in</h1>
         </div>
+        <input type="hidden" name="next" value={next} />
         <label style={{ display: "grid", gap: 6 }}>
           <span style={{ fontSize: 14, fontWeight: 600 }}>Email</span>
           <input
             type="email"
             name="email"
+            required
             placeholder="client@company.com"
-            style={{
-              border: "1px solid var(--border)",
-              borderRadius: 10,
-              padding: "0.75rem",
-              fontSize: 15,
-            }}
+            style={inputStyle}
           />
         </label>
         <label style={{ display: "grid", gap: 6 }}>
@@ -47,17 +53,18 @@ export default function LoginPage() {
           <input
             type="password"
             name="password"
+            required
             placeholder="Password set by admin"
-            style={{
-              border: "1px solid var(--border)",
-              borderRadius: 10,
-              padding: "0.75rem",
-              fontSize: 15,
-            }}
+            style={inputStyle}
           />
         </label>
+        {params.error ? (
+          <p style={{ margin: 0, color: "#b91c1c", fontSize: 14 }}>
+            Incorrect email or password.
+          </p>
+        ) : null}
         <button
-          type="button"
+          type="submit"
           style={{
             background: "var(--accent)",
             color: "white",
@@ -71,17 +78,19 @@ export default function LoginPage() {
           Continue
         </button>
         <p style={{ margin: 0, fontSize: 13, color: "var(--muted)" }}>
-          Auth wiring comes next. For now use{" "}
-          <Link href="/portal" style={{ color: "var(--accent)" }}>
-            client preview
-          </Link>{" "}
-          or{" "}
-          <Link href="/admin" style={{ color: "var(--accent)" }}>
-            admin preview
+          Portal admins use emails listed in <code>PORTAL_ADMIN_EMAILS</code>.{" "}
+          <Link href="/" style={{ color: "var(--accent)" }}>
+            Home
           </Link>
-          .
         </p>
       </form>
     </main>
   );
 }
+
+const inputStyle: React.CSSProperties = {
+  border: "1px solid var(--border)",
+  borderRadius: 10,
+  padding: "0.75rem",
+  fontSize: 15,
+};

@@ -1,6 +1,12 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await auth();
+  if (session?.user?.role === "admin") redirect("/admin");
+  if (session?.user) redirect("/portal");
+
   return (
     <main
       style={{
@@ -28,8 +34,8 @@ export default function HomePage() {
           Client activity portal
         </h1>
         <p style={{ color: "var(--muted)", lineHeight: 1.5 }}>
-          Invite-only access for clients to review participant activity, with an
-          admin workspace to manage users and monitor usage.
+          Invite-only access for clients to review participant engagement from the
+          admin panel, with an admin workspace to manage users and monitor usage.
         </p>
         <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.5rem" }}>
           <Link
@@ -43,30 +49,6 @@ export default function HomePage() {
             }}
           >
             Sign in
-          </Link>
-          <Link
-            href="/admin"
-            style={{
-              background: "var(--accent-soft)",
-              color: "var(--accent)",
-              padding: "0.7rem 1rem",
-              borderRadius: 10,
-              fontWeight: 600,
-            }}
-          >
-            Admin preview
-          </Link>
-          <Link
-            href="/portal"
-            style={{
-              background: "var(--accent-soft)",
-              color: "var(--accent)",
-              padding: "0.7rem 1rem",
-              borderRadius: 10,
-              fontWeight: 600,
-            }}
-          >
-            Client preview
           </Link>
         </div>
       </section>

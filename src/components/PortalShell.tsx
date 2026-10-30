@@ -1,11 +1,14 @@
 import Link from "next/link";
+import { logoutAction } from "@/app/actions/auth";
 import { CLIENT_REPORTS } from "@/lib/reports";
 
 export function PortalShell({
   activeSlug,
+  groupName,
   children,
 }: {
   activeSlug: string;
+  groupName?: string | null;
   children: React.ReactNode;
 }) {
   return (
@@ -31,6 +34,11 @@ export function PortalShell({
           <h1 style={{ margin: "0.25rem 0 0", fontSize: "1.15rem" }}>
             Activity reports
           </h1>
+          {groupName ? (
+            <p style={{ margin: "0.5rem 0 0", opacity: 0.75, fontSize: 13 }}>
+              {groupName}
+            </p>
+          ) : null}
         </div>
         <nav style={{ display: "grid", gap: 6 }}>
           {CLIENT_REPORTS.map((report) => {
@@ -52,9 +60,21 @@ export function PortalShell({
           })}
         </nav>
         <div style={{ marginTop: "auto" }}>
-          <Link href="/" style={{ opacity: 0.75, fontSize: 14 }}>
-            Back to home
-          </Link>
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              style={{
+                background: "transparent",
+                border: 0,
+                color: "rgba(255,255,255,0.75)",
+                cursor: "pointer",
+                padding: 0,
+                fontSize: 14,
+              }}
+            >
+              Sign out
+            </button>
+          </form>
         </div>
       </aside>
       <main style={{ padding: "2rem" }}>{children}</main>
